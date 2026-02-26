@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "y4prPcXYMJo=",
+  "success": true,
+  "projectFilePath": "/Users/brandonestrada/Documents/Code Stack Academy/Level 3/Level 3 Week 1/blogapibackend/blogapibackend.csproj",
+  "expectedPackageFiles": [
+    "/Users/brandonestrada/.nuget/packages/microsoft.aspnetcore.openapi/9.0.9/microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
+    "/Users/brandonestrada/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Access to the path '/Users/brandonestrada/.local/share/NuGet/http-cache/670c1461c29885f9aa22c281d8b7da90845b38e4$ps:_api.nuget.org_v3_index.json/vuln_index.dat-new' is denied.",
+      "projectPath": "/Users/brandonestrada/Documents/Code Stack Academy/Level 3/Level 3 Week 1/blogapibackend/blogapibackend.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/brandonestrada/Documents/Code Stack Academy/Level 3/Level 3 Week 1/blogapibackend/blogapibackend.csproj",
+      "targetGraphs": []
+    }
+  ]
+}
