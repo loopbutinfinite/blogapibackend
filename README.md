@@ -78,7 +78,7 @@ string Salt
 string Hash //Consists of 256 characters
 
 ```
-### BlogModel
+### BlogItemModel
 
 ```csharp
  
