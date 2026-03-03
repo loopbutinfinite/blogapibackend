@@ -17,7 +17,7 @@ namespace blogapibackend.Services
         }
         public bool AddUser(CreateAccountDTO userToAdd)
         {
-            
+            throw new NotFiniteNumberException();
         }
     }
 }

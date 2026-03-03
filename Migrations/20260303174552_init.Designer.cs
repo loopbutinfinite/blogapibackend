@@ -11,7 +11,7 @@ using blogapibackend.Services.Context;
 namespace blogapibackend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260302173202_init")]
+    [Migration("20260303174552_init")]
     partial class init
     {
         /// <inheritdoc />
