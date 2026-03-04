@@ -101,7 +101,7 @@ bool isDeleted
 ### We need a way to sign in with our username and password
 
 
-### LoginModel
+### LoginModel DTO
 
 ```csharp
 
@@ -110,7 +110,7 @@ string Password
 
 ```
 
-### CreateAccountModel
+### CreateAccountModel DTO
 
 ```csharp
 
@@ -119,7 +119,7 @@ string Username
 string Password
 
 ```
-### Password Model
+### Password Model DTO
 
 ```csharp
 

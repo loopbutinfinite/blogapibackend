@@ -21,6 +21,7 @@ namespace blogapibackend.Controllers
 
         //Function to add our user that will be type of CreateAccountDTO called UserToAdd. This will return bool once our user is added.
         //Add User
+        [HttpPost("AddUser")]
         public bool AddUser(CreateAccountDTO UserToAdd)
         {
             return _data.AddUser(UserToAdd);
