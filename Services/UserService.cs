@@ -1,16 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using blogapibackend.Models;
 using blogapibackend.Models.DTO;
 using blogapibackend.Services.Context;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace blogapibackend.Services
 {
-    public class UserService
+    public class UserService : ControllerBase
     {
         private readonly DataContext _context;
         public UserService(DataContext dataContext)
@@ -36,10 +42,10 @@ namespace blogapibackend.Services
             //Then we'll add it to our DataContext
             //Save our changes
             //Return a bool to return true or false.
-            
+
             bool result = false;
 
-            if(userToAdd.Username != null && !DoesUserExist(userToAdd.Username))
+            if (userToAdd.Username != null && !DoesUserExist(userToAdd.Username))
             {
                 UserModel newUser = new UserModel();
 
@@ -83,11 +89,11 @@ namespace blogapibackend.Services
         //Helper function to verify password
         public bool VerifyUserPassword(string? Password, string? StoredHash, string? StoredSalt)
         {
-          //We need a check 
-          if(StoredSalt == null)
+            //We need a check 
+            if (StoredSalt == null)
             {
                 return false;
-            }  
+            }
 
             var SaltBytes = Convert.FromBase64String(StoredSalt);
 
@@ -96,6 +102,47 @@ namespace blogapibackend.Services
             var newHash = Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(256));
 
             return newHash == StoredHash;
+        }
+
+        public IEnumerable<UserModel> GetAllUsers()
+        {
+            return _context.UserInfo;
+        }
+
+        public IActionResult Login(LoginDTO user)
+        {
+            IActionResult result = Unauthorized();
+            //A check to see if the user exists.
+            if (DoesUserExist(user.Username))
+            {
+                //Create a secret key used to sign the JTW token
+                //This should be stored securely (not hard coded in production)
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superdupersuperdupersuperdupersuperdupersecurekey@676767"));//Enter random characters until you hit the 256 characters.
+                //Create signing credentials using the secret key and HMACSHA256 algorithm
+                var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256); //This ensures that the token can't be tampered with
+
+                //Build the JWT token with metadata.
+                var tokenOptions = new JwtSecurityToken(
+                    issuer: "https://localhost:5001",
+                    audience: "https://localhost:5001",
+                    claims: new List<Claim>(),
+                    expires: DateTime.Now.AddMinutes(5),
+                    signingCredentials: signingCredentials
+                );
+
+                //Convert the token object into string that can be sent to the client
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
+                //Return the token as JSON to the client
+                result = Ok(new { Token = tokenString });
+            }
+            //Return either the token if the user exists, or Unauthorized if the user does not exist.
+            return result;
+        }
+
+        public UserIdDTO GetUserIdDTOByUserName(string username)
+        {
+            throw new NotImplementedException();
         }
     }
 }

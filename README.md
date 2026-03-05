@@ -128,6 +128,15 @@ string Hash
 
 ```
 
+### UserId DTO
+
+```csharp
+
+int UserId
+string PublisherName
+
+```
+
 ### Services
 Context/Folder
     - DataContext
