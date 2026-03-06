@@ -109,32 +109,42 @@ namespace blogapibackend.Services
             return _context.UserInfo;
         }
 
+        //GetAllUsersDataByUsername
+        public UserModel GetAllUserDataByUsername(string username)
+        {
+            return _context.UserInfo.FirstOrDefault(user => user.Username == username);
+        }
+
         public IActionResult Login(LoginDTO user)
         {
             IActionResult result = Unauthorized();
             //A check to see if the user exists.
             if (DoesUserExist(user.Username))
             {
-                //Create a secret key used to sign the JTW token
-                //This should be stored securely (not hard coded in production)
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superdupersuperdupersuperdupersuperdupersecurekey@676767"));//Enter random characters until you hit the 256 characters.
-                //Create signing credentials using the secret key and HMACSHA256 algorithm
-                var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256); //This ensures that the token can't be tampered with
+                UserModel foundUser = GetAllUserDataByUsername(user.Username);
+                if (VerifyUserPassword(user.Password, foundUser.Hash, foundUser.Salt))
+                {
+                    //Create a secret key used to sign the JTW token
+                    //This should be stored securely (not hard coded in production)
+                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superdupersuperdupersuperdupersuperdupersecurekey@676767"));//Enter random characters until you hit the 256 characters.
+                                                                                                                                                 //Create signing credentials using the secret key and HMACSHA256 algorithm
+                    var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256); //This ensures that the token can't be tampered with
 
-                //Build the JWT token with metadata.
-                var tokenOptions = new JwtSecurityToken(
-                    issuer: "https://localhost:5001",
-                    audience: "https://localhost:5001",
-                    claims: new List<Claim>(),
-                    expires: DateTime.Now.AddMinutes(5),
-                    signingCredentials: signingCredentials
-                );
+                    //Build the JWT token with metadata.
+                    var tokenOptions = new JwtSecurityToken(
+                        issuer: "https://localhost:5001",
+                        audience: "https://localhost:5001",
+                        claims: new List<Claim>(),
+                        expires: DateTime.Now.AddMinutes(5),
+                        signingCredentials: signingCredentials
+                    );
 
-                //Convert the token object into string that can be sent to the client
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+                    //Convert the token object into string that can be sent to the client
+                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-                //Return the token as JSON to the client
-                result = Ok(new { Token = tokenString });
+                    //Return the token as JSON to the client
+                    result = Ok(new { Token = tokenString });
+                }
             }
             //Return either the token if the user exists, or Unauthorized if the user does not exist.
             return result;
@@ -143,6 +153,46 @@ namespace blogapibackend.Services
         public UserIdDTO GetUserIdDTOByUserName(string username)
         {
             throw new NotImplementedException();
+        }
+
+        //Helper function to help us find a user
+        public UserModel GetUserByUsername(string username)
+        {
+            return _context.UserInfo.SingleOrDefault(user => user.Username == username);
+        }
+
+        public bool DeleteUser(string userToDelete)
+        {
+            UserModel foundUser = GetUserByUsername(userToDelete);
+            bool result = false;
+
+            if (foundUser != null)
+            {
+                foundUser.Username = userToDelete;
+                _context.Remove(foundUser);
+
+                result = _context.SaveChanges() != 0;
+            }
+            return result;
+        }
+
+        //Another helper function to help us get user by id
+        public UserModel GetUserById(int id)
+        {
+            return _context.UserInfo.SingleOrDefault(user => user.Id == id);
+        }
+
+        public bool UpdateUser(int id, string username)
+        {
+            UserModel foundUser = GetUserById(id);
+            bool result = false;
+            if (foundUser != null)
+            {
+                foundUser.Username = username;
+                _context.Update(foundUser);
+                result = _context.SaveChanges() != 0;
+            }
+            return result;
         }
     }
 }
